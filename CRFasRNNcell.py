@@ -5,8 +5,8 @@ from tensorflow.python.ops import init_ops
 #from tensorflow.python.ops import variable_scope as vs
 from tensorflow.python.platform import tf_logging as logging
 
-class CRFasRNNCelll(tf.nn.rnn_cell.RNNCell):
-    def __init__(self.input_size=None, 
+class CRFasRNNcell(tf.nn.rnn_cell.RNNCell):
+    def __init__(self,input_size=None, 
                 imsize=[128, 128,3], kernsize=[2,2] ,stride=[1,5,5,1], 
                  labelnum=3,
                  cell_clip=None,  initializer=None, state_is_tuple=False):
@@ -39,9 +39,9 @@ class CRFasRNNCelll(tf.nn.rnn_cell.RNNCell):
 
             Q0 = tf.nn.conv2d(Q,kern, self.stride, padding='SAME') #m,i
             Q1 = tf.reduce_sum(tf.matmul(w,Q0)) #i
-            Q2 = tf.redulce_sum(tf.matmul(mu,Q1)
-            Z=tf.reduce_sum(Q2)
+            Q2 = tf.redulce_sum(tf.matmul(mu,Q1))
+            Z  = tf.reduce_sum(Q2)
             Qout= tf.div(Q,Z)
 
-        nstate=array_ops.concat(3, [c, m]))
+        nstate=array_ops.concat(3, [c, m])
         return Qout, Qout
