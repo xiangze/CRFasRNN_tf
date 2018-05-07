@@ -3,6 +3,7 @@ from CRFasRNNcell import CRFasRNNcell
 import numpy as np
 import math
 import cv2
+from getPascalVOC2012 import genVOC2012filelist,load_Y,load_X
 
 tf.app.flags.DEFINE_string("data_dir","img/","Image directory.")
 tf.app.flags.DEFINE_string("out_dir", "result/", "Output directory.")
@@ -39,8 +40,11 @@ def train(images):
 def predict(images):
     pass
 
-def main(dir="VOC"):
-    #[batch,width,height,chanel]
+def main(ddir="VOC"):
+    if(ddir=="VOC"):
+        IMG_SIZE = [224,224]
+        xfiles,yfiles=genVOC2012filelist(ddir,True,rate=0.9)
+
     input_ph = tf.placeholder(tf.float32,[None, IMG_SIZE[0], IMG_SIZE[1], 3])
     y = tf.placeholder(tf.float32,[None, IMG_SIZE[0], IMG_SIZE[1], 3])
 
@@ -52,16 +56,16 @@ def main(dir="VOC"):
 
     with tf.Session() as sess:
         test_feed = {}
-        test_feed[input_ph]= cv2.imread(FLAGS.data_dir+str(109+i)+'.png')/255.0
-        test_feed[y] = [cv2.imread(FLAGS.data_dir+str(113)+'.png')/255.0]
+
+        test_feed[input_ph]= np.asarray([cv2.imread(xfiles[i])/255. for i in range(batch_size)]
+        test_feed[y] =       np.asarray([cv2.imread(yfiles[i])/255. for i in range(batch_size)]
 
         sess.run(init_op)
         for step in range(FLAGS.train_step):
             feed_dict = {}
-            target = [random.randint(0,104) for i in range(FLAGS.batch_size)]
-
-            feed_dict[input_ph]=[cv2.imread(FLAGS.data_dir+str(i+j)+'.png')/255.0 for j in target]
-            feed_dict[y] = [cv2.imread(FLAGS.data_dir+str(i+4)+'.png')/255.0 for i in target ]
+            target = [random.randint(0,100) for i in range(FLAGS.batch_size)]
+            feed_dict[input_ph]=np.asarray([cv2.imread(xfiles[batch_size+i])/255. for i in target]
+            feed_dict[y]       =np.asarray([cv2.imread(cv2.imread(xfiles[batch_size+i])/255. for i in target]
 
             print("step%d training"%step)
             sess.run(train_step, feed_dict=feed_dict)
@@ -69,7 +73,7 @@ def main(dir="VOC"):
             if (step+1) % 10 == 0:
                 created, error_val = sess.run([result, error], feed_dict=test_feed)
                 print("step%d loss: %f" % (step, error_val))
-                cv2.imwrite(FLAGS.out_dir+"step"+str(step)+".png", created[0] * 255.0)
+                cv2.imwrite(FLAGS.out_dir+"step"+str(step)+".png", created[0] * 255.)
 
 
 
