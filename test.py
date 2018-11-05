@@ -57,15 +57,15 @@ def main(ddir="VOC"):
     with tf.Session() as sess:
         test_feed = {}
 
-        test_feed[input_ph]= np.asarray([cv2.imread(xfiles[i])/255. for i in range(batch_size)]
-        test_feed[y] =       np.asarray([cv2.imread(yfiles[i])/255. for i in range(batch_size)]
+        test_feed[input_ph]= np.asarray([cv2.imread(xfiles[i])/255. for i in range(batch_size)])
+        test_feed[y] =       np.asarray([cv2.imread(yfiles[i])/255. for i in range(batch_size)])
 
         sess.run(init_op)
         for step in range(FLAGS.train_step):
             feed_dict = {}
             target = [random.randint(0,100) for i in range(FLAGS.batch_size)]
-            feed_dict[input_ph]=np.asarray([cv2.imread(xfiles[batch_size+i])/255. for i in target]
-            feed_dict[y]       =np.asarray([cv2.imread(cv2.imread(xfiles[batch_size+i])/255. for i in target]
+            feed_dict[input_ph]=np.asarray([cv2.imread(xfiles[batch_size+i])/255. for i in target])
+            feed_dict[y]       =np.asarray([cv2.imread(yfiles[batch_size+i])/255. for i in target])
 
             print("step%d training"%step)
             sess.run(train_step, feed_dict=feed_dict)
